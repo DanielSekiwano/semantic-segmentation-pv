@@ -1,3 +1,7 @@
+> [!NOTE]
+> Source code is withheld to comply with academic project guidelines at the [**KU Leuven**](https://www.kuleuven.be/english/kuleuven). This repository functions solely as a technical showcase detailing architecture, implementation strategy and results.
+>
+> This was a group project; the Semantic Segmentation section — code, writeup, and conclusion below — was completed independently by me.
 # Overview
 *The following overview was provided by KU Leuven.
 The project itself was developed and run on Kaggle, with weights from the previous training cycle passed in to be used if not retraining.*
@@ -47,7 +51,7 @@ Similar to the classification task, the images in the dataset vary in size. To f
 Implementations are handled via the torch module, utilizing torch.utils.data.DataLoader for batch management. We use a custom Dataset class to manage image-mask pairs, ensuring that any spatial transformations (like cropping or flipping) are applied identically to both the input image and the target segmentation map to maintain spatial alignment.
 
 ## Initial DeepLab Model
-We go straight for a DeepLabV3 approach here, introduced by [Chen et al (2017), *Rethinking Atrous Convolution for Semantic Image Segmentation*](https://arxiv.org/abs/1706.05587). Semantic segmentation differs from classification as it is a dense prediction task, meaning for each pixel in the input image, we must output a class for that pixel, i.e. output is the same size as the input. DeepLabV3 excels at performing semantic segmentation as it is great at handling objects of different sizes, especially when compared to U-Net, seen in *Lecture 10: CNN Architectures*.
+We go straight for a DeepLabV3 approach here, introduced by [Chen et al (2017), *Rethinking Atrous Convolution for Semantic Image Segmentation*](https://arxiv.org/abs/1706.05587). Semantic segmentation differs from classification as it is a dense prediction task, meaning for each pixel in the input image, we must output a class for that pixel, i.e. output is the same size as the input. DeepLabV3 excels at performing semantic segmentation as it is great at handling objects of different sizes, especially when compared to U-Net.
 
 U-Net relies on downsampling and then upsampling the image. When downsampling, resolution decreases, but receptive field increases. While U-Net makes use of skip connections to preserve spatial details, it can struggle with multi-scale context.
 
@@ -59,12 +63,14 @@ DeepLab uses two techniques that help it overcome these flaws:
 We begin with our Dataset class, similar to our previous Dataset class. Images passed to the DeepLab network must be normalised using mean and standard deviations computed from the ImageNet dataset that was used to pretrain the backbone. This is mentioned at https://pytorch.org/hub/pytorch_vision_deeplabv3_resnet101/.<br>
 
 #### Improvement: Image Augmentations
-When training, we perform three augmentations that act as regularisation - [Random Resized Crop (RRC)](https://docs.pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html#randomresizedcrop), [Colour Jitter](https://docs.pytorch.org/vision/main/generated/torchvision.transforms.ColorJitter.html#colorjitter), and random flipping. The first randomly crops the image in the scale range given, the second alters the image via slight brightness, contrast and saturation changes, and the last randomly flips images half the time. This increases the number of images we train on, so that each epoch, the model sees a slightly different version of the image. This regularises the model and helps prevent the model from learning the specific image instead of the segmentation task.<br>
+When training, we perform three augmentations that act as regularisation - [Random Resized Crop (RRC)](https://docs.pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html#randomresizedcrop), [Colour Jitter](https://docs.pytorch.org/vision/main/generated/torchvision.transforms.ColorJitter.html#colorjitter), and random flipping. The first randomly crops the image in the scale range given, the second alters the image via slight brightness, contrast and saturation changes, and the last randomly flips images half the time. This increases the number of images we train on, so that each epoch, the model sees a slightly different version of the image. 
+
+Given our training set is relatively small (749 images), these augmentations are particularly important for preventing the model from memorising specific images rather than learning the underlying segmentation task. This regularises the model and helps prevent the model from learning the specific image instead of the segmentation task.
 
 When not training, images are preprocessed without any of this augmentation.
 
 ### Weights
-We load DeepLabV3 without the pretrained weights, as these weights were used to predict PASCAL VOC classes on the COCO Dataset. So while they were not trained on PASCAL VOC images, they were trained to predict the classes we want to predict, so we omit them to avoid potential data leakage. We instead load weights from ResNet trained on ImageNet, since we have a ResNet backbone to understand features, add our MLP head to predict one of the 21 classes, and remove the auxiliary classifier, which consumes a lot of VRAM.
+We load DeepLabV3 without the pretrained weights. Although these weights weren't trained directly on PASCAL VOC images, they were trained on COCO to predict the same classes — since we can't verify there's no image overlap between COCO's training set and our test set, we omit them to avoid potential leakage.
 
 ### Training
 We have three separate fitting stages: 
@@ -199,7 +205,7 @@ Model and history saved to deeplab_best_model.pth, best mIoU: 0.6161
 ```
 
 ### Analysis
-We see that our model clearly converges and begins to plateau with a peak mIoU of 0.6161 occurring at epoch 19 of the third stage. We also see that Epoch 1 of the third stage had an mIoU of 0.6159, so the model had likely converged at this point, as we only see an mIoU improvement of 0.0002 through 30 epochs.
+We see that our model clearly converges and begins to plateau with a peak mIoU of 0.6161 occurring at epoch 19 of the third stage. We also see that Epoch 1 of the third stage had an mIoU of 0.6159 — only 0.0002 lower than this eventual peak — so the model had likely already converged by the start of this stage, with mIoU fluctuating within a narrow band for the remainder of training.
 
 Our validation loss clearly decreases, and then plateaus, but we can view the interplay between mIoU, training loss, and validation loss with some plots.
 
@@ -465,3 +471,18 @@ These tend to be:
     - e.g. the buses predicted (second row, first column). The model struggles to get the boundaries of the buses themselves, likely due to many similar colours on the windows and reflections.
 - Images with small objects that need to be segmented
     - e.g. the bike predicted (first row, second column). The model struggles to get the entire bike in the mask, as seen by small gaps in the mask and varying width of the tyres, with the bottom of the tyres disappearing almost completely at the bottom.
+
+# Conclusion
+The semantic segmentation task deepened our understanding of what it means to move "beyond classification". Classification asks, "what objects are present?", while segmentation requires answering "where exactly is each object, at the pixel level?", a much more difficult task.
+
+The smoother boundaries in our predicted masks compared to the ground truth are a direct consequence of our architectural choice: DeepLabV3 uses dilation, which averages over a wider context than high-resolution skip connections would, producing cleaner but slightly less sharp boundaries.
+
+The improvement from Cross-Entropy loss to Combo Loss (CE + Dice) also illustrated an important principle: the choice of loss function encodes assumptions about the data. CE loss treats every pixel equally, which means the dominant background class silently shapes the gradients. Dice loss directly optimizes spatial overlap and is inherently more robust to this imbalance. This relative tightening of the val/train loss ratio — from ~3.81x under CE to ~3.33x under Combo Loss — confirmed that the Dice component acts as a global regularizer.
+
+Our model is, however, far from perfect, and tends to struggle with segmenting objects that occupy a small space. Dilation widens our receptive field, but can lead to sets of pixels being missed, meaning that thin objects may not be correctly segmented, as the network does not correctly recognize them when passing over the image. We also struggle with specular reflections, as segmentation relies heavily on local contextual features, meaning we can end up predicting background in the middle of an object.
+
+Given more time on this project, an immediate first step would be to use our successful classification to aid in segmentation. By first checking the classes that our classifier predicts, we can perform better in semantic segmentation. As mentioned earlier, each pixel counts for segmentation, so we can simply check the classes predicted by the classifier and refuse to segment any classes other than those mentioned.
+
+A hybrid search for our Combo Loss weighting would also likely prove fruitful. Our segmenter often spuriously predicts pixels, whether they are within an object or not, which is likely due to the Cross Entropy component of the loss, which considers individual pixels. It is possible that our model would perform better with a weight leaning more towards Dice Loss, as opposed to the equal weighting between Cross-Entropy and Dice Loss we use now.
+
+Our current model is not ready for real-world deployment. We use test-time augmentation at prediction, meaning we perform 6 forward passes for each image, before aggregating the probabilities and making a prediction. In a real-time scenario, e.g. video editing, or autonomous driving systems, this latency is unacceptable. Stripping this TTA will reduce latency, but drop performance, meaning we have a trade-off between latency and performance. A potential move towards real-world performance here would be to use Knowledge Distillation. This teacher-student framework would allow a lighter, much faster model to learn the complex patterns that our heavy network has learnt and apply them much quicker than our current setup. A good example of a candidate student would be MobileNetV3.
