@@ -1,7 +1,45 @@
+# Semantic Segmentation on PASCAL VOC
+
 > [!NOTE]
 > Source code is withheld to comply with academic project guidelines at the [**KU Leuven**](https://www.kuleuven.be/english/kuleuven). This repository functions solely as a technical showcase detailing architecture, implementation strategy and results.
 >
 > This was a group project; the Semantic Segmentation section — code, writeup, and conclusion below — was completed independently by me.
+
+## Table of Contents
+
+1. [Overview](#overview)
+
+2. [Train Set Exploration](#train-set-exploration)
+   * [Image Size](#image-size)
+   * [Class Distribution](#class-distribution)
+   * [Class Co-occurrence](#class-co-occurrence)
+
+3. [Semantic Segmentation](#semantic-segmentation)
+
+    3.1. [Initial DeepLab Model](#initial-deeplab-model)
+      * [DeepLab Dataset](#deeplab-dataset)
+      * [Weights](#weights)
+      * [Training](#training)
+      * [Prediction](#prediction)
+      * [Dataset Loading](#dataset-loading)
+      * [Improvement: Model Saving](#improvement-model-saving)
+      * [Training Run](#training-run)
+      * [Analysis](#analysis)
+      * [Stage Plots](#stage-plots)
+      * [Overall Analysis](#overall-analysis)
+      * [Segmentation Mask Plots](#segmentation-mask-plots)
+      * [Analysis](#analysis-1)
+    
+    3.2. [Improvement: Combo Loss](#improvement-combo-loss)
+      * [Second Training Run](#second-training-run)
+      * [Analysis](#analysis-2)
+      * [Stage Plots](#stage-plots-1)
+      * [Overall Analysis](#overall-analysis-1)
+      * [Segmentation Mask Plots](#segmentation-mask-plots-1)
+      * [Analysis](#analysis-3)
+      * [Segmenting Test Data](#segmenting-test-data)
+
+4. [Conclusion](#conclusion)
 # Overview
 *The following overview was provided by KU Leuven.
 The project itself was developed and run on Kaggle, with weights from the previous training cycle passed in to be used if not retraining.*
