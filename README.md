@@ -18,23 +18,23 @@ Channels: [3]
 Number of unique image sizes: 146
 ```
 
-<img width="986" height="451" alt="image" src="https://github.com/user-attachments/assets/a347238a-d7b0-4505-be2a-ab68d0795911" /><br>
+![hw_dist](images/hw_dist.png)
 
-<img width="552" height="435" alt="image" src="https://github.com/user-attachments/assets/b3588710-89a3-4194-8fe4-6dd07ab33bc9" /><br>
+![hw_ratio](images/hw_ratio.png)
 
 ## Class Distribution
 We will use the 20 labels used for the 20 object classes in the PASCAL VOC dataset. We can view the distribution for these classes in our training set.
 
-<img width="1005" height="581" alt="image" src="https://github.com/user-attachments/assets/5eb02af5-7107-45a5-b0b0-4de21fb7c2d5" /><br>
+![class_dist](images/class_dist.png)
 
 Some images in our training set have several labels associated with them.
 
-<img width="850" height="547" alt="image" src="https://github.com/user-attachments/assets/b98e902a-1492-4bfb-a4fd-a1d17add9b60" /><br>
+![class_lpi](images/class_lpi.png)
 
 ## Class Co-occurrence
 Finally, we can view the co-occurrence matrix for our label set.
 
-<img width="1289" height="1176" alt="image" src="https://github.com/user-attachments/assets/2deca741-737a-42ab-9e51-c2fd765b0143" /><br>
+![class_cooc](images/class_cooc.png)
 
 # Semantic Segmentation
 
@@ -211,7 +211,7 @@ Our validation loss clearly decreases, and then plateaus, but we can view the in
 
 ### Stage Plots
 
-<img width="1790" height="490" alt="image" src="https://github.com/user-attachments/assets/a8300782-e464-4040-ab51-9b44e46517f4" /><br>
+![initial_dl_tplot](#images/initial_dl_tplot.png)
 
 On the left y-axis, we have the Cross-Entropy Loss values, and on the right y-axis we have the mIoU values. On the x-axis is the number of epochs we run in each stage.
 #### Stage 1: Linear Probe
@@ -234,7 +234,7 @@ We can view this more clearly if we combine all three stages onto one singular p
 
 ### Overall Analysis
 
-<img width="1189" height="590" alt="image" src="https://github.com/user-attachments/assets/6ecfadae-18dd-49a1-90b6-965f66ee1b57" /><br>
+![initial_dl_uplot](#images/initial_dl_uplot.png)
 
 Now we plot all 60 epochs on one graph. Again, the left y-axis represents Cross-Entropy Loss, the right y-axis represents the mIoU, and the x-axis represents the cumulative epochs across all stages.
 
@@ -252,11 +252,11 @@ We can use this model to predict masks for our training images alongside the pre
 
 We'll first plot the ground truth masks.
 
-<img width="1990" height="3174" alt="image" src="https://github.com/user-attachments/assets/e07ef497-5c9b-49f6-9c82-267b1a8cecba" /><br>
+![gtruth_masks](#images/gtruth_masks.png)
 
 We can compare these with our predicted masks.
 
-<img width="1990" height="3174" alt="image" src="https://github.com/user-attachments/assets/f30ba564-b918-4b24-9ab1-6516c4001c57" /><br>
+![initial_dl_masks](#images/initial_dl_masks.png)
 
 ### Analysis
 It's clear that our model has learned the task, evidenced by the accuracy of the segmentation masks.
@@ -383,7 +383,7 @@ Once again validation loss clearly decreases, and then plateaus, but we can view
 
 ### Stage Plots
 
-<img width="1790" height="490" alt="image" src="https://github.com/user-attachments/assets/667da6d1-f6b0-4134-832b-a8aadfe5861a" /><br>
+![combo_tplot](#images/combo_tplot.png)
 
 On the left y-axis, we have the Combo Loss values, and on the right y-axis we have the mIoU values. On the x-axis is the number of epochs we run in each stage.
 
@@ -408,7 +408,7 @@ We can view this more clearly if we combine all three stages onto one singular p
 
 ### Overall Analysis
 
-<img width="1189" height="590" alt="image" src="https://github.com/user-attachments/assets/34cd7e73-f65d-46a5-a1de-04e6125152f2" /><br>
+![combo_uplot](#images/combo_uplot.png)
 
 Now we plot all 60 epochs on one graph. Again, the left y-axis represents Combo Loss, the right y-axis represents the mIoU, and the x-axis represents the cumulative epochs across all stages.
 
@@ -439,11 +439,11 @@ We can use this model to predict masks for our training images alongside the pre
 
 We'll first plot the ground truth masks again.
 
-<img width="1990" height="3174" alt="image" src="https://github.com/user-attachments/assets/71feb41b-cfef-4805-a862-49e80c0f748e" /><br>
+![gtruth_masks](#images/gtruth_masks.png)
 
 We can compare these with our newly predicted masks.
 
-<img width="1990" height="3174" alt="image" src="https://github.com/user-attachments/assets/46af4f89-6956-4ec9-8769-bc018fb6c835" /><br>
+![combo_masks](#images/combo_masks.png)
 
 ### Analysis
 Once again, our model has learned the task, evidenced by the accuracy of the segmentation masks.
@@ -459,9 +459,9 @@ People are sitting on the sofa in the bottom-centre image, next to the sheep. In
 In general, there is a lot less noise in our improved model, with the flecks of random colours both outside and within objects largely diminished. While the mIoU increased only marginally with the different loss functions, the visual improvement shows that mIoU alone is not the only measure of improvement.
 
 ### Segmenting Test Data
-Finally, we can plot some of our segmentation masks on the test data.
+Finally, we can plot some of our segmentation masks on the test data using our Combo Loss Model.
 
-<img width="1990" height="3190" alt="image" src="https://github.com/user-attachments/assets/deda6f51-d51a-45f8-ac77-fb8b36cb53fe" /><br>
+![combo_td](#images/combo_td.png)
 
 We can once again see that the segmentation task is understood. Highlights here include the bird, the car, the dog, and the jumping horse, which are all very clearly segmented.
 
