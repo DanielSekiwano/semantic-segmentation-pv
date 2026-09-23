@@ -7,16 +7,16 @@
 
 ## Table of Contents
 
-1. [Overview](#overview)
+1. [Overview](#1-overview)
 
-2. [Train Set Exploration](#train-set-exploration)
+2. [Train Set Exploration](#2-train-set-exploration)
    * [Image Size](#image-size)
    * [Class Distribution](#class-distribution)
    * [Class Co-occurrence](#class-co-occurrence)
 
-3. [Semantic Segmentation](#semantic-segmentation)
+3. [Semantic Segmentation](#3-semantic-segmentation)
 
-    3.1. [Initial DeepLab Model](#initial-deeplab-model)
+    3.1. [Initial DeepLab Model](#31-initial-deeplab-model)
       * [DeepLab Dataset](#deeplab-dataset)
       * [Weights](#weights)
       * [Training](#training)
@@ -30,7 +30,7 @@
       * [Segmentation Mask Plots](#segmentation-mask-plots)
       * [Analysis](#analysis-1)
     
-    3.2. [Improvement: Combo Loss](#improvement-combo-loss)
+    3.2. [Improvement: Combo Loss](#32-improvement-combo-loss)
       * [Second Training Run](#second-training-run)
       * [Analysis](#analysis-2)
       * [Stage Plots](#stage-plots-1)
@@ -39,14 +39,15 @@
       * [Analysis](#analysis-3)
       * [Segmenting Test Data](#segmenting-test-data)
 
-4. [Conclusion](#conclusion)
-# Overview
+4. [Conclusion](#4-conclusion)
+
+# 1. Overview
 *The following overview was provided by KU Leuven.
 The project itself was developed and run on Kaggle, with weights from the previous training cycle passed in to be used if not retraining.*
 
 The training set contains 749 examples.
 The test set contains 750 examples.
-# Train Set Exploration
+# 2. Train Set Exploration
 ## Image Size
 We can first view some statistics about the training set we are using:
 ```
@@ -74,7 +75,7 @@ Finally, we can view the co-occurrence matrix for our label set.
 
 ![class_cooc](images/class_cooc.png)
 
-# Semantic Segmentation
+# 3. Semantic Segmentation
 
 **Performance Metric:**
 We evaluate our segmentation models using the mean Intersection over Union (mIoU) and Pixel Accuracy. While Pixel Accuracy provides a general sense of correctly classified area, mIoU is a more robust metric for segmentation as it accounts for the spatial overlap between the predicted mask and the ground truth. By averaging the IoU across all classes, we ensure that smaller objects (like bicycles or birds) are given equal importance to larger, more frequent classes like "background."
@@ -88,7 +89,7 @@ Similar to the classification task, the images in the dataset vary in size. To f
 **Config:**
 Implementations are handled via the torch module, utilizing torch.utils.data.DataLoader for batch management. We use a custom Dataset class to manage image-mask pairs, ensuring that any spatial transformations (like cropping or flipping) are applied identically to both the input image and the target segmentation map to maintain spatial alignment.
 
-## Initial DeepLab Model
+## 3.1. Initial DeepLab Model
 We go straight for a DeepLabV3 approach here, introduced by [Chen et al (2017), *Rethinking Atrous Convolution for Semantic Image Segmentation*](https://arxiv.org/abs/1706.05587). Semantic segmentation differs from classification as it is a dense prediction task, meaning for each pixel in the input image, we must output a class for that pixel, i.e. output is the same size as the input. DeepLabV3 excels at performing semantic segmentation as it is great at handling objects of different sizes, especially when compared to U-Net.
 
 U-Net relies on downsampling and then upsampling the image. When downsampling, resolution decreases, but receptive field increases. While U-Net makes use of skip connections to preserve spatial details, it can struggle with multi-scale context.
@@ -303,7 +304,7 @@ Highlights include the cow, the dog, and the sheep. There are also cases where w
 
 We note in particular that boundaries from our predictions appear somewhat smoother than in the ground truth. This smoother boundary is likely an architectural characteristic of DeepLabV3, possibly resulting from the dilation used within the model.
 
-## Improvement: Combo Loss
+## 3.2. Improvement: Combo Loss
 Cross-Entropy Loss works for segmentation as it considers each pixel individually, maximising the number of pixels that belong to the right class.<br>
 However, this can backfire, especially when training data has a majority of pixels belonging to one main class e.g. background. Classifying every pixel as background can already produce relatively high pixel-level accuracy due to the dominance of the background class.
 
@@ -510,7 +511,7 @@ These tend to be:
 - Images with small objects that need to be segmented
     - e.g. the bike predicted (first row, second column). The model struggles to get the entire bike in the mask, as seen by small gaps in the mask and varying width of the tyres, with the bottom of the tyres disappearing almost completely at the bottom.
 
-# Conclusion
+# 4. Conclusion
 The semantic segmentation task deepened our understanding of what it means to move "beyond classification". Classification asks, "what objects are present?", while segmentation requires answering "where exactly is each object, at the pixel level?", a much more difficult task.
 
 The smoother boundaries in our predicted masks compared to the ground truth are a direct consequence of our architectural choice: DeepLabV3 uses dilation, which averages over a wider context than high-resolution skip connections would, producing cleaner but slightly less sharp boundaries.
