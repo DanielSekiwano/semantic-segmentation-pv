@@ -211,7 +211,7 @@ Our validation loss clearly decreases, and then plateaus, but we can view the in
 
 ### Stage Plots
 
-![initial_dl_tplot](#images/initial_dl_tplot.png)
+![initial_dl_tplot](images/initial_dl_tplot.png)
 
 On the left y-axis, we have the Cross-Entropy Loss values, and on the right y-axis we have the mIoU values. On the x-axis is the number of epochs we run in each stage.
 #### Stage 1: Linear Probe
@@ -234,7 +234,7 @@ We can view this more clearly if we combine all three stages onto one singular p
 
 ### Overall Analysis
 
-![initial_dl_uplot](#images/initial_dl_uplot.png)
+![initial_dl_uplot](images/initial_dl_uplot.png)
 
 Now we plot all 60 epochs on one graph. Again, the left y-axis represents Cross-Entropy Loss, the right y-axis represents the mIoU, and the x-axis represents the cumulative epochs across all stages.
 
@@ -252,11 +252,11 @@ We can use this model to predict masks for our training images alongside the pre
 
 We'll first plot the ground truth masks.
 
-![gtruth_masks](#images/gtruth_masks.png)
+![gtruth_masks](images/gtruth_masks.png)
 
 We can compare these with our predicted masks.
 
-![initial_dl_masks](#images/initial_dl_masks.png)
+![initial_dl_masks](images/initial_dl_masks.png)
 
 ### Analysis
 It's clear that our model has learned the task, evidenced by the accuracy of the segmentation masks.
@@ -383,7 +383,7 @@ Once again validation loss clearly decreases, and then plateaus, but we can view
 
 ### Stage Plots
 
-![combo_tplot](#images/combo_tplot.png)
+![combo_tplot](images/combo_tplot.png)
 
 On the left y-axis, we have the Combo Loss values, and on the right y-axis we have the mIoU values. On the x-axis is the number of epochs we run in each stage.
 
@@ -408,7 +408,7 @@ We can view this more clearly if we combine all three stages onto one singular p
 
 ### Overall Analysis
 
-![combo_uplot](#images/combo_uplot.png)
+![combo_uplot](images/combo_uplot.png)
 
 Now we plot all 60 epochs on one graph. Again, the left y-axis represents Combo Loss, the right y-axis represents the mIoU, and the x-axis represents the cumulative epochs across all stages.
 
@@ -439,11 +439,11 @@ We can use this model to predict masks for our training images alongside the pre
 
 We'll first plot the ground truth masks again.
 
-![gtruth_masks](#images/gtruth_masks.png)
+![gtruth_masks](images/gtruth_masks.png)
 
 We can compare these with our newly predicted masks.
 
-![combo_masks](#images/combo_masks.png)
+![combo_masks](images/combo_masks.png)
 
 ### Analysis
 Once again, our model has learned the task, evidenced by the accuracy of the segmentation masks.
@@ -461,7 +461,7 @@ In general, there is a lot less noise in our improved model, with the flecks of 
 ### Segmenting Test Data
 Finally, we can plot some of our segmentation masks on the test data using our Combo Loss Model.
 
-![combo_td](#images/combo_td.png)
+![combo_td](images/combo_td.png)
 
 We can once again see that the segmentation task is understood. Highlights here include the bird, the car, the dog, and the jumping horse, which are all very clearly segmented.
 
